@@ -16,6 +16,9 @@ builder.Services.AddScoped<INavItemsRepository, NavItemsRepository>();
 builder.Services.AddScoped<ISectionRepository, SectionsRepository>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 builder.Services.AddScoped<IContactUsRepository , ContactUsRepository>();
+builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<IDetailsRepository, DetailsRepository>();
+builder.Services.AddScoped<IServiceHourRepository,ServiceHoursRepository>();
 builder.Services.AddSingleton<DbConnection>(); // Register DbConnection as a singleton
 
 

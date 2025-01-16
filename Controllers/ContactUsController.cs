@@ -14,9 +14,9 @@ namespace RestaurantDemo.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddContact([FromBody]ContactUs contact)
+        public ActionResult AddContact([FromBody] ContactUs contact)
         {
-            if(contact == null)
+            if (contact == null)
             {
                 return BadRequest("Invalid");
             }
@@ -30,5 +30,40 @@ namespace RestaurantDemo.Controllers
             var contacts = _contactUsRepository.GetContacts();
             return Ok(contacts);
         }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateContact(int id, [FromBody] ContactUs contactUs)
+        {
+            if (contactUs == null || id != contactUs.Id)
+            {
+                return BadRequest("Contact ID mismatch");
+            }
+
+            try
+            {
+                var result = _contactUsRepository.UpdateContact(contactUs);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteContact(int id)
+        {
+            try
+            {
+                var result = _contactUsRepository.DeleteContact(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
     }
 }
