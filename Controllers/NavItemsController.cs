@@ -17,9 +17,9 @@ namespace RestaurantDemo.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<NavItems>> GetNavItems()
+        public async Task<ActionResult<List<NavItems>>> GetNavItems()
         {
-            var navItems = _navItemsRepository.GetNavItems();
+            var navItems = await _navItemsRepository.GetNavItems();
             return Ok(navItems);
         }
     }

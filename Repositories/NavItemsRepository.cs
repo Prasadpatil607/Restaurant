@@ -1,14 +1,16 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
 using RestaurantDemo.DatabaseConnection;
 using RestaurantDemo.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 
 namespace RestaurantDemo.Repositories
 {
     public interface INavItemsRepository
     {
-        List<NavItems> GetNavItems();
+        Task<List<NavItems>> GetNavItems();
     }
 
     public class NavItemsRepository : INavItemsRepository
@@ -20,40 +22,20 @@ namespace RestaurantDemo.Repositories
             _db = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
         }
 
-        public List<NavItems> GetNavItems()
+        public async Task<List<NavItems>> GetNavItems()
         {
-            var navItemsList = new List<NavItems>();
-
-            using (var conn = _db.GetConnection())
+            try
             {
-                conn.Open();
-                using (var cmd = new SqlCommand("GetNavItems", conn)
+                using (var conn = _db.GetConnection())
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                })
-                {
-                    try
-                    {
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var navItem = new NavItems
-                                {
-                                    NavItem = reader.GetString(0)                                    
-                                };
-                                navItemsList.Add(navItem);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Error fetching NavItems", ex);
-                    }
+                    var navList = await conn.QueryAsync<NavItems>("GetNavItems", new { }, commandType: CommandType.StoredProcedure);
+                    return navList.ToList();
                 }
             }
-
-            return navItemsList;
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error fetching NavItems", ex);
+            }
         }
     }
 }

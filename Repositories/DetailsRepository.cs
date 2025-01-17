@@ -1,55 +1,40 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
 using RestaurantDemo.DatabaseConnection;
 using RestaurantDemo.Models;
+using System.Data;
 
 namespace RestaurantDemo.Repositories
 {
     public interface IDetailsRepository
     {
-        List<Details> GetDetails();
+        public Task<List<Details>> GetDetails();
     }
+
     public class DetailsRepository : IDetailsRepository
     {
         private readonly DbConnection _db;
+
         public DetailsRepository(DbConnection db)
         {
             _db = db;
         }
 
-        public List<Details> GetDetails()
+        public async Task<List<Details>> GetDetails()
         {
-            List<Details> detailsList = new List<Details>();
+            
             using (var conn = _db.GetConnection())
             {
-                conn.Open();
-                using (var cmd = new SqlCommand("GetDetails", conn)
+                try
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                })
+                    // Dapper automatically maps the query results to the Details class
+                   var  detailsList = await conn.QueryAsync<Details>("GetDetails", new { }, commandType: CommandType.StoredProcedure);
+                    return detailsList.ToList();
+                }
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        using (var read = cmd.ExecuteReader())
-                        {
-                            while (read.Read())
-                            {
-                                var details = new Details()
-                                {
-
-                                    Address = read.GetString(read.GetOrdinal("Address")),
-                                    PhoneNo = read.GetString(read.GetOrdinal("PhoneNo")),
-                                    Email = read.GetString(read.GetOrdinal("Email")),
-                                    TelephoneSupport = read.GetString(read.GetOrdinal("TelephoneSupport"))
-
-                                };
-                                detailsList.Add(details);
-                            }
-                        }
-                    }
-                    catch (Exception ex) { throw new ApplicationException("Error fetching feedback details", ex); }
+                    throw new ApplicationException("Error fetching feedback details", ex);
                 }
             }
-            return detailsList;
         }
     }
 }

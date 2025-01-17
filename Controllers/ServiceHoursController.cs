@@ -14,9 +14,9 @@ namespace RestaurantDemo.Controllers
         }
 
         [HttpGet]   
-        public ActionResult<List<ServiceHours>> GetServiceHour()
+        public async Task<ActionResult<List<ServiceHours>>> GetServiceHour()
         {
-            var res = serviceHourRepository.GetServiceHours();
+            var res = await serviceHourRepository.GetServiceHours();
             return Ok(res);
         }
     }

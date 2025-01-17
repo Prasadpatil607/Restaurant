@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using System.Data;
+using Microsoft.Data.SqlClient;
 using RestaurantDemo.DatabaseConnection;
 using RestaurantDemo.Models;
 
@@ -7,8 +9,8 @@ namespace RestaurantDemo.Repositories
 
     public interface IFeedbackRepository
     {
-        string AddFeedback(Feedback feedback);
-        List<Feedback> GetFeedbacks();
+        Task<Feedback> AddFeedback(Feedback feedback);
+        Task<List<Feedback>> GetFeedbacks();
         string DeleteFeedback(int id);
     }
     public class FeedbackRepository : IFeedbackRepository
@@ -18,69 +20,51 @@ namespace RestaurantDemo.Repositories
             _db = connection;
         }
 
-        public string AddFeedback(Feedback feedback)
+        public async Task<Feedback> AddFeedback(Feedback feedback)
         {
-            using (var conn = _db.GetConnection())
+            try
             {
-                conn.Open();
-                using (var cmd = new SqlCommand("AddFeedback", conn)
+                using (var conn = _db.GetConnection())
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                })
-                {
-                    cmd.Parameters.AddWithValue("@FeedbackMessage", feedback.FeedbackMessage ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Name", feedback.Name ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Ratings", feedback.Ratings);
-
-                    try
+                    var Id = await conn.ExecuteScalarAsync<int>("AddFeedback", new
                     {
-                        var res = cmd.ExecuteScalar();
-                        return "Feedback submitted!!";
-
-                    }
-                    catch (Exception ex)
+                        FeedbackMessage = feedback.FeedbackMessage,
+                        Name = feedback.Name,
+                        Ratings = feedback.Ratings
+                    }, commandType: CommandType.StoredProcedure);
+                    var feedbacks = new Feedback
                     {
-                        throw new ApplicationException("Error adding new feedback ", ex);
-                    }
+                        Id = Id,
+                        FeedbackMessage = feedback.FeedbackMessage,
+                        Name = feedback.Name,
+                        Ratings = feedback.Ratings
+                       
+                    };
+                    return feedbacks;
                 }
-
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error adding new Feedback item", ex);
             }
         }
+        
 
 
-        public List<Feedback> GetFeedbacks()
+        public async Task<List<Feedback>> GetFeedbacks()
         {
-            List<Feedback> feedbacksList = new List<Feedback>();
-            using (var conn = _db.GetConnection())
+            try
             {
-                conn.Open();
-                using (var cmd = new SqlCommand("GetFeedback", conn)
+                using (var conn = _db.GetConnection())
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                })
-                {
-                    try
-                    {
-                        using (var read = cmd.ExecuteReader())
-                        {
-                            while (read.Read())
-                            {
-                                var feedback = new Feedback()
-                                {
-                                    
-                                    FeedbackMessage = read.GetString(read.GetOrdinal("FeedbackMessage")),
-                                    Name = read.GetString(read.GetOrdinal("Name")),
-                                    Ratings = read.GetInt32(read.GetOrdinal("Ratings"))
-                                    
-                                };
-                                feedbacksList.Add(feedback);
-                            }
-                        }
-                    }
-                    catch (Exception ex) { throw new ApplicationException("Error fetching feedback details", ex); }
+                    var feedbackList = await conn.QueryAsync<Feedback>("GetFeedback", new { }, commandType: CommandType.StoredProcedure);
+                    return feedbackList.ToList();
                 }
             }
-            return feedbacksList;
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error fetching Menu", ex);
+            }
         }
 
 

@@ -15,20 +15,20 @@ namespace RestaurantDemo.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddFeedback([FromBody]Feedback feedback)
+        public async Task<IActionResult> AddFeedback([FromBody]Feedback feedback)
         {
             if (feedback == null)
             {
                 return BadRequest("Invalid format");
             }
-            var res = _feedbackRepository.AddFeedback(feedback);
+            var res = await _feedbackRepository.AddFeedback(feedback);
             return Ok(res);
         }
 
         [HttpGet]
-        public ActionResult<List<Feedback>> GetFeedbacks()
+        public async Task<ActionResult<List<Feedback>>> GetFeedbacks()
         {
-            var result = _feedbackRepository.GetFeedbacks();
+            var result = await _feedbackRepository.GetFeedbacks();
             return Ok(result);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using RestaurantDemo.DatabaseConnection;
 using RestaurantDemo.Models;
@@ -8,8 +9,8 @@ namespace RestaurantDemo.Repositories
 {
     public interface ISectionRepository
     {
-        List<Sections> GetSections();
-        int AddSection(Sections sections);
+        Task<List<Sections>> GetSections();
+        Task<Sections> AddSection(Sections sections);
 
         void UpdateSection(Sections section);
     }
@@ -20,69 +21,47 @@ namespace RestaurantDemo.Repositories
             _db = dbConnection;
         }
 
-        public List<Sections> GetSections()
+        public async Task<List<Sections>> GetSections()
         {
-            var sections = new List<Sections>();
-            using (var conn = _db.GetConnection())
+            try
             {
-                conn.Open();
-                using (var cmd = new SqlCommand("GetSections", conn)
+                using (var conn = _db.GetConnection())
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                })
-                {
-                    try
-                    {
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var sec = new Sections()
-                                {
-                                    Id = reader.GetInt32(0),
-                                    SectionName = reader.GetString(1),
-                                    SectionHeading = reader.GetString(2),
-                                    SectionDescription = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                };
-                                sections.Add(sec);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Error fetching Sections", ex);
-                    }
+                    var sectionList = await conn.QueryAsync<Sections>("GetSections", new { }, commandType: CommandType.StoredProcedure);
+                    return sectionList.ToList();
                 }
             }
-
-            return sections;
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error fetching Menu", ex);
+            }
         }
 
-        public int AddSection(Sections section)
+        public async Task<Sections> AddSection(Sections section)
         {
-            using (var conn = _db.GetConnection())
+            try
             {
-                conn.Open();
-                using (var cmd = new SqlCommand("AddSection", conn)
+                using (var conn = _db.GetConnection())
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                })
-                {
-                    cmd.Parameters.AddWithValue("@SectionName", section.SectionName ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@SectionHeading", section.SectionHeading ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@SectionDescription", section.SectionDescription ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@CreatedBy", 1);  
-
-                    try
+                    var Id = await conn.ExecuteScalarAsync<int>("AddSection", new
                     {
-                        var result = cmd.ExecuteScalar(); 
-                        return Convert.ToInt32(result);
-                    }
-                    catch (Exception ex)
+                        SectionName = section.SectionName,
+                        SectionHeading = section.SectionHeading,
+                        SectionDescription = section.SectionDescription,
+                    }, commandType: CommandType.StoredProcedure);
+                    var sections = new Sections
                     {
-                        throw new ApplicationException("Error adding new section", ex);
-                    }
+                        Id = Id,
+                        SectionName = section.SectionName,
+                        SectionHeading = section.SectionHeading,
+                        SectionDescription = section.SectionDescription
+                    };
+                    return sections;
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error adding new Section details", ex);
             }
         }
 

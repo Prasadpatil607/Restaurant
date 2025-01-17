@@ -16,42 +16,42 @@ namespace RestaurantDemo.Controllers
         }
 
         [HttpGet]        
-        public ActionResult<List<Menu>> GetMenu()
+        public async Task<ActionResult<List<Menu>>> GetMenu()
         {
-            var menu = menuRepository.GetMenu();
+            var menu = await menuRepository.GetMenu();
             return Ok(menu);
         }
 
         [HttpPost]
-        public ActionResult AddMenuItem([FromBody]Menu menu)
+        public async Task<ActionResult> AddMenuItem([FromBody]Menu menu)
         {
             if (menu == null)
                 return BadRequest("Invalid menu item");
 
-            var item = menuRepository.AddMenuItem(menu);
+            var item = await menuRepository.AddMenuItem(menu);
             return Ok(item);
         }
 
-        [HttpPut]
-        public ActionResult EditMenuItem([FromBody] Menu menu)
-        {
-            if (menu == null)
-                return BadRequest("Menu item not found");
-            var res=menuRepository.UpdateMenuItem(menu);
-            return Ok(res);
-        }
+        //[HttpPut]
+        //public ActionResult EditMenuItem([FromBody] Menu menu)
+        //{
+        //    if (menu == null)
+        //        return BadRequest("Menu item not found");
+        //    var res=menuRepository.UpdateMenuItem(menu);
+        //    return Ok(res);
+        //}
 
 
-        [HttpDelete]
-        public ActionResult DeleteMenuItem(int id) { 
-            var result = menuRepository.DeleteMenuItem(id);
-            if (result != null)
-            {
-                return Ok(result);
-            }
-            else
-                return BadRequest("Menu item not found!");
+        //[HttpDelete]
+        //public ActionResult DeleteMenuItem(int id) { 
+        //    var result = menuRepository.DeleteMenuItem(id);
+        //    if (result != null)
+        //    {
+        //        return Ok(result);
+        //    }
+        //    else
+        //        return BadRequest("Menu item not found!");
             
-        }
+        //}
     }
 }

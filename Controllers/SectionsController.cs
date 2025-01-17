@@ -14,19 +14,19 @@ namespace RestaurantDemo.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Sections>> getSections()
+        public async Task<ActionResult<List<Sections>>> getSections()
         {
-            var sections = sectionRepository.GetSections();
+            var sections = await sectionRepository.GetSections();
             return Ok(sections);
         }
 
         [HttpPost]
-        public ActionResult AddSection([FromBody] Sections section)
+        public async Task<IActionResult> AddSection([FromBody] Sections section)
         {
             if (section == null) 
                 return BadRequest("Invalid Section");
 
-            var sec = sectionRepository.AddSection(section);
+            var sec = await sectionRepository.AddSection(section);
             return Ok(sec);
         }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RestaurantDemo.Models;
 using RestaurantDemo.Repositories;
 
 namespace RestaurantDemo.Controllers
@@ -14,9 +15,9 @@ namespace RestaurantDemo.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details()
+        public async Task<IActionResult> Details()
         {
-            var res = _detailRepository.GetDetails();
+            var res = await _detailRepository.GetDetails();
             return Ok(res);
         }
     }

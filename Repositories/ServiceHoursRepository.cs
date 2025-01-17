@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using System.Data;
+using Microsoft.Data.SqlClient;
 using RestaurantDemo.DatabaseConnection;
 using RestaurantDemo.Models;
 
@@ -6,7 +8,7 @@ namespace RestaurantDemo.Repositories
 {
     public interface IServiceHourRepository
     {
-        List<ServiceHours> GetServiceHours();
+        Task<List<ServiceHours>> GetServiceHours();
     }
     public class ServiceHoursRepository : IServiceHourRepository
     {
@@ -16,38 +18,20 @@ namespace RestaurantDemo.Repositories
             _db = db;
         }
 
-        public List<ServiceHours> GetServiceHours()
+        public async Task<List<ServiceHours>> GetServiceHours()
         {
-            List<ServiceHours> serviceList = new List<ServiceHours>();
-            using (var conn = _db.GetConnection())
+            try
             {
-                conn.Open();
-                using (var cmd = new SqlCommand("GetServiceHours", conn)
+                using (var conn = _db.GetConnection())
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                })
-                {
-                    try
-                    {
-                        using (var read = cmd.ExecuteReader())
-                        {
-                            while (read.Read())
-                            {
-                                var service = new ServiceHours()
-                                {
-
-                                    MondayToSaturday = read.GetString(read.GetOrdinal("MondayToSaturday")),
-                                    Sunday = read.GetString(read.GetOrdinal("Sunday")),
-                                    
-                                };
-                                serviceList.Add(service);
-                            }
-                        }
-                    }
-                    catch (Exception ex) { throw new ApplicationException("Error fetching Service details", ex); }
+                    var serviceHourList= await conn.QueryAsync<ServiceHours>("GetServiceHours", new { }, commandType: CommandType.StoredProcedure);
+                    return serviceHourList.ToList();
                 }
             }
-            return serviceList;
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error fetching Service Hour details", ex);
+            }
         }
 
     }
