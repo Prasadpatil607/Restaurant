@@ -31,39 +31,24 @@ namespace RestaurantDemo.Controllers
             return Ok(contacts);
         }
 
-        //[HttpPut("{id}")]
-        //public IActionResult UpdateContact(int id, [FromBody] ContactUs contactUs)
-        //{
-        //    if (contactUs == null || id != contactUs.Id)
-        //    {
-        //        return BadRequest("Contact ID mismatch");
-        //    }
-
-        //    try
-        //    {
-        //        var result = _contactUsRepository.UpdateContact(contactUs);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Internal server error: {ex.Message}");
-        //    }
-        //}
-
-
-        //[HttpDelete("{id}")]
-        //public IActionResult DeleteContact(int id)
-        //{
-        //    try
-        //    {
-        //        var result = _contactUsRepository.DeleteContact(id);
-        //        return Ok(result);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Internal server error: {ex.Message}");
-        //    }
-        //}
+        [HttpPut("{id}")]
+        public async Task<ActionResult> UpdateContact(int id, [FromBody] ContactUs contactUs)
+        {
+            if (contactUs == null || id != contactUs.Id)
+            {
+                return BadRequest("Contact ID mismatch");
+            }
+            
+            try
+            {
+                var result = await _contactUsRepository.UpdateContact(contactUs);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
     }
 }

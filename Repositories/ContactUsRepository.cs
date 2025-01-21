@@ -10,8 +10,8 @@ namespace RestaurantDemo.Repositories
     {
         Task<ContactUs> AddContact(ContactUs contactUs);
         Task<List<ContactUs>> GetContacts();
-        //string UpdateContact(ContactUs contactUs);
-        //string DeleteContact(int id);
+        Task<ContactUs> UpdateContact(ContactUs contactUs);
+        
     }
     public class ContactUsRepository : IContactUsRepository
     {
@@ -62,65 +62,43 @@ namespace RestaurantDemo.Repositories
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Error fetching Menu", ex);
+                throw new ApplicationException("Error fetching Contacts", ex);
             }
         }
 
 
-        //public string UpdateContact(ContactUs contactUs)
-        //{
-        //    using (var conn = _db.GetConnection())
-        //    {
-        //        conn.Open();
-        //        using (var cmd = new SqlCommand("UpdateContactUs", conn)
-        //        {
-        //            CommandType = System.Data.CommandType.StoredProcedure
-        //        })
-        //        {
-        //            cmd.Parameters.AddWithValue("@Id", contactUs.Id);
-        //            cmd.Parameters.AddWithValue("@Name", contactUs.Name ?? (object)DBNull.Value);
-        //            cmd.Parameters.AddWithValue("@Email", contactUs.Email ?? (object)DBNull.Value);
-        //            cmd.Parameters.AddWithValue("@Subject", contactUs.Subject ?? (object)DBNull.Value);
-        //            cmd.Parameters.AddWithValue("@Message", contactUs.Message ?? (object)DBNull.Value);
+        public async Task<ContactUs> UpdateContact(ContactUs contact)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                {
+                    var parameters = new
+                    {
+                        contact.Id,
+                        contact.Name,
+                        contact.Email,
+                        contact.Subject,
+                        contact.Message
+                    };
 
-        //            try
-        //            {
-        //                var res = cmd.ExecuteScalar();
-        //                return "Contact updated successfully";
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                throw new ApplicationException("Error updating contact details", ex);
-        //            }
-        //        }
-        //    }
-        //}
+                    var result = await conn.ExecuteAsync("UpdateContactUs", parameters, commandType: CommandType.StoredProcedure);
 
-
-        //public string DeleteContact(int contactId)
-        //{
-        //    using (var conn = _db.GetConnection())
-        //    {
-        //        conn.Open();
-        //        using (var cmd = new SqlCommand("DeleteContactUs", conn)
-        //        {
-        //            CommandType = System.Data.CommandType.StoredProcedure
-        //        })
-        //        {
-        //            cmd.Parameters.AddWithValue("@Id", contactId);
-
-        //            try
-        //            {
-        //                var res = cmd.ExecuteScalar();
-        //                return "Contact deleted successfully";
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                throw new ApplicationException("Error deleting contact", ex);
-        //            }
-        //        }
-        //    }
-        //}
+                    if (result > 0)
+                    {
+                        return contact;
+                    }
+                    else
+                    {
+                        throw new ApplicationException("No rows were updated.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error updating contacts", ex);
+            }
+        }
 
 
 

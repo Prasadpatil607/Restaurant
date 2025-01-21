@@ -10,8 +10,8 @@ namespace RestaurantDemo.Repositories
     {
         public Task<List<Menu>> GetMenu();
         public Task<Menu> AddMenuItem(Menu menuItem);
-        //public Task<Menu> DeleteMenuItem(int id);
-        //public Task<Menu> UpdateMenuItem(Menu menu);
+        public Task<bool> DeleteMenuItem(int id);
+        public Task<Menu> UpdateMenuItem(Menu menu);
     }
     public class MenuRepository : IMenuRepository
     {
@@ -69,65 +69,61 @@ namespace RestaurantDemo.Repositories
             }
         }
 
-        //public string DeleteMenuItem(int id)
-        //{
-        //    using (var conn = _db.GetConnection())
-        //    {
-        //        conn.Open();
-        //        using (var cmd = new SqlCommand("DeleteMenuItem", conn)
-        //        {
-        //            CommandType = System.Data.CommandType.StoredProcedure
-        //        })
-        //        {
-        //            cmd.Parameters.AddWithValue("@Id", id);
+        public async Task<Menu> UpdateMenuItem(Menu menuItem)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                {
+                    var parameters = new
+                    {
+                        menuItem.Id,
+                        menuItem.ItemName,
+                        menuItem.ItemDescription,
+                        menuItem.ItemPrice,
+                        menuItem.IsBreakfast,
+                        menuItem.IsLunch,
+                        menuItem.IsDinner,
+                        menuItem.IsDessert,
+                        menuItem.IsDrink
+                    };
 
-        //            try
-        //            {
-        //                var result = cmd.ExecuteScalar();
-        //                return "Menu item Deleted Successfully!!";
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                throw new ApplicationException("Error deleting menu item", ex);
-        //            }
-        //        }
-        //    }
-        //}
+                    var result = await conn.ExecuteAsync("UpdateMenuItem", parameters, commandType: CommandType.StoredProcedure);
 
-        //public string UpdateMenuItem(Menu menuItem)
-        //{
-        //    using (var conn = _db.GetConnection())
-        //    {
-        //        conn.Open();
-        //        using (var cmd = new SqlCommand("UpdateMenuItem", conn)
-        //        {
-        //            CommandType = System.Data.CommandType.StoredProcedure
-        //        })
-        //        {
-        //            cmd.Parameters.AddWithValue("@ID", menuItem.Id);
-        //            cmd.Parameters.AddWithValue("@ItemName", menuItem.ItemName ?? (object)DBNull.Value);
-        //            cmd.Parameters.AddWithValue("@ItemDescrition", menuItem.ItemDescription ?? (object)DBNull.Value);
-        //            cmd.Parameters.AddWithValue("@ItemPrice", menuItem.ItemPrice ?? (object)DBNull.Value);
-        //            cmd.Parameters.AddWithValue("@isBreakfast", menuItem.IsBreakfast);
-        //            cmd.Parameters.AddWithValue("@isLunch", menuItem.IsLunch);
-        //            cmd.Parameters.AddWithValue("@isDinner", menuItem.IsDinner);
-        //            cmd.Parameters.AddWithValue("@isDessert", menuItem.IsDessert);
-        //            cmd.Parameters.AddWithValue("@isDrink", menuItem.IsDrink);
+                    if (result > 0)
+                    {
+                        return menuItem; 
+                    }
+                    else
+                    {
+                        throw new ApplicationException("No rows were updated.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error updating menu item", ex);
+            }
+        }
 
-        //            try
-        //            {
-        //                int res=cmd.ExecuteNonQuery();
-        //                if (res > 0)
-        //                    return "Menu item updated successfully";
-        //                else return "Nothig is updated";
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                throw new ApplicationException("Error updating menu item", ex);
-        //            }
-        //        }
-        //    }
-        //}
+        public async Task<bool> DeleteMenuItem(int id)
+        {
+            try
+            {
+                using (var conn = _db.GetConnection())
+                {
+                    var parameters = new { Id = id };
+
+                    var result = await conn.ExecuteAsync("DeleteMenuItem", parameters, commandType: CommandType.StoredProcedure);
+
+                    return result > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error deleting menu item", ex);
+            }
+        }
 
     }
 }

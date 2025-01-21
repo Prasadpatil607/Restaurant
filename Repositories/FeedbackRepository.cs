@@ -3,6 +3,7 @@ using System.Data;
 using Microsoft.Data.SqlClient;
 using RestaurantDemo.DatabaseConnection;
 using RestaurantDemo.Models;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace RestaurantDemo.Repositories
 {
@@ -11,7 +12,8 @@ namespace RestaurantDemo.Repositories
     {
         Task<Feedback> AddFeedback(Feedback feedback);
         Task<List<Feedback>> GetFeedbacks();
-        string DeleteFeedback(int id);
+        Task<bool> DeleteFeedback(int id);
+        
     }
     public class FeedbackRepository : IFeedbackRepository
     {
@@ -63,33 +65,27 @@ namespace RestaurantDemo.Repositories
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Error fetching Menu", ex);
+                throw new ApplicationException("Error fetching feedback", ex);
             }
         }
 
 
-        public string DeleteFeedback(int id)
+        public async Task<bool> DeleteFeedback(int id)
         {
-            using (var conn = _db.GetConnection())
+            try
             {
-                conn.Open();
-                using (var cmd = new SqlCommand("DeleteFeedback", conn)
+                using (var conn = _db.GetConnection())
                 {
-                    CommandType = System.Data.CommandType.StoredProcedure
-                })
-                {
-                    cmd.Parameters.AddWithValue("@Id", id);
+                    var parameters = new { Id = id };
 
-                    try
-                    {
-                        var res = cmd.ExecuteScalar();
-                        return "Feedback deleted successfully";
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Error deleting feedback", ex);
-                    }
+                    var result = await conn.ExecuteAsync("DeleteFeedback", parameters, commandType: CommandType.StoredProcedure);
+
+                    return result > 0; 
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error deleting feedback", ex);
             }
         }
 

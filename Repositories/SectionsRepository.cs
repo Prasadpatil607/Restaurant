@@ -12,7 +12,7 @@ namespace RestaurantDemo.Repositories
         Task<List<Sections>> GetSections();
         Task<Sections> AddSection(Sections sections);
 
-        void UpdateSection(Sections section);
+        Task<Sections> UpdateSection(Sections section);
     }
     public class SectionsRepository : ISectionRepository
     {
@@ -33,7 +33,7 @@ namespace RestaurantDemo.Repositories
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Error fetching Menu", ex);
+                throw new ApplicationException("Error fetching sections", ex);
             }
         }
 
@@ -65,38 +65,35 @@ namespace RestaurantDemo.Repositories
             }
         }
 
-        public void UpdateSection(Sections section)
+        public async Task<Sections> UpdateSection(Sections sections)
         {
-            
-            var parameters = new[]
-            {
-            new SqlParameter("@ID", section.Id),
-            new SqlParameter("@SectionName", section.SectionName),
-            new SqlParameter("@SectionHeading", section.SectionHeading),
-            new SqlParameter("@SectionDescription", section.SectionDescription),
-            //new SqlParameter("@ModifiedBy", section.ModifiedBy)
-            };
             try
             {
                 using (var conn = _db.GetConnection())
                 {
-                    conn.Open();
-                    using (var cmd = new SqlCommand("UpdateSection", conn)
+                    var parameters = new
                     {
-                        CommandType = System.Data.CommandType.StoredProcedure
+                        sections.Id,
+                        sections.SectionName,
+                        sections.SectionHeading,
+                        sections.SectionDescription
+                    };
 
-                    })
+                    var result = await conn.ExecuteAsync("UpdateSections", parameters, commandType: CommandType.StoredProcedure);
+
+                    if (result > 0)
                     {
-                        cmd.Parameters.AddRange(parameters);
-                        cmd.ExecuteNonQuery();
+                        return sections; 
                     }
-                        
+                    else
+                    {
+                        throw new ApplicationException("No rows were updated.");
+                    }
                 }
-
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("An error occurred while updating the section.", ex);
+                throw new ApplicationException("Error updating section", ex);
             }
         }
     }

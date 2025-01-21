@@ -32,26 +32,27 @@ namespace RestaurantDemo.Controllers
             return Ok(item);
         }
 
-        //[HttpPut]
-        //public ActionResult EditMenuItem([FromBody] Menu menu)
-        //{
-        //    if (menu == null)
-        //        return BadRequest("Menu item not found");
-        //    var res=menuRepository.UpdateMenuItem(menu);
-        //    return Ok(res);
-        //}
+        [HttpPut]
+        public async Task<ActionResult> EditMenuItem([FromBody] Menu menu)
+        {
+            if (menu == null)
+                return BadRequest("Menu item not found");
+            var res = await menuRepository.UpdateMenuItem(menu);
+            return Ok(res);
+        }
 
 
-        //[HttpDelete]
-        //public ActionResult DeleteMenuItem(int id) { 
-        //    var result = menuRepository.DeleteMenuItem(id);
-        //    if (result != null)
-        //    {
-        //        return Ok(result);
-        //    }
-        //    else
-        //        return BadRequest("Menu item not found!");
-            
-        //}
+        [HttpDelete]
+        public async Task<ActionResult> DeleteMenuItem(int id)
+        {
+            var result = await menuRepository.DeleteMenuItem(id);
+            if (result)
+            {
+                return Ok(result);
+            }
+            else
+                return BadRequest("Menu item not found!");
+
+        }
     }
 }
