@@ -1,9 +1,6 @@
 ﻿using Dapper;
-using Microsoft.Data.SqlClient;
 using RestaurantDemo.DatabaseConnection;
 using RestaurantDemo.Models;
-using System;
-using System.Collections.Generic;
 using System.Data;
 
 namespace RestaurantDemo.Repositories

@@ -26,7 +26,7 @@ namespace RestaurantDemo.Repositories
             {
                 try
                 {
-                    // Dapper automatically maps the query results to the Details class
+                   
                    var  detailsList = await conn.QueryAsync<Details>("GetDetails", new { }, commandType: CommandType.StoredProcedure);
                     return detailsList.ToList();
                 }

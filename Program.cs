@@ -1,6 +1,7 @@
 
 
 using RestaurantDemo.DatabaseConnection;
+using RestaurantDemo.Handlers;
 using RestaurantDemo.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,14 @@ builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 builder.Services.AddScoped<IDetailsRepository, DetailsRepository>();
 builder.Services.AddScoped<IServiceHourRepository,ServiceHoursRepository>();
 builder.Services.AddSingleton<DbConnection>(); // Register DbConnection as a singleton
+
+builder.Services.AddScoped<INavItemsHandler, NavItemsHandler>();
+builder.Services.AddScoped<ISectionsHandler, SectionsHandler>();
+builder.Services.AddScoped<IMenuHandler, MenuHandler>();
+builder.Services.AddScoped<IContactUsHandler, ContactUsHandler>();
+builder.Services.AddScoped<IFeedbackHandler, FeedbackHandler>();
+builder.Services.AddScoped<IDetailsHandler, DetailsHandler>();
+builder.Services.AddScoped<IServiceHoursHandler, ServiceHoursHandler>();
 
 
 var app = builder.Build();

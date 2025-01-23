@@ -50,9 +50,6 @@ namespace RestaurantDemo.Repositories
                 throw new ApplicationException("Error adding new Feedback item", ex);
             }
         }
-        
-
-
         public async Task<List<Feedback>> GetFeedbacks()
         {
             try
