@@ -3,7 +3,7 @@
     public class NavItems
     {
         public int Id { get; set; }
-        public string NavItem { get; set; }
+        public string? NavItem { get; set; }
        public int OrderNumber { get; set; }
         public int ParentId { get; set; }
         public bool IsHeader { get; set; }
