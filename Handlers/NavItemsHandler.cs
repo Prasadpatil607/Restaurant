@@ -9,8 +9,8 @@ namespace RestaurantDemo.Handlers
     }
     public class NavItemsHandler : INavItemsHandler
     {
-        private readonly INavItemsRepository _navItemsRepository;
-        public NavItemsHandler(INavItemsRepository navItemsRepository)
+        private readonly IRestaurantRepository _navItemsRepository;
+        public NavItemsHandler(IRestaurantRepository navItemsRepository)
         {
             _navItemsRepository = navItemsRepository;
         }

@@ -9,8 +9,8 @@ namespace RestaurantDemo.Handlers
     }
     public class MenuHandler : IMenuHandler
     {
-        private readonly IMenuRepository _menuRepository;
-        public MenuHandler(IMenuRepository menuRepository)
+        private readonly IRestaurantRepository _menuRepository;
+        public MenuHandler(IRestaurantRepository menuRepository)
         {
             _menuRepository = menuRepository;
         }

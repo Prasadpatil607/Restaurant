@@ -9,8 +9,8 @@ namespace RestaurantDemo.Handlers
     }
     public class SectionsHandler : ISectionsHandler
     {
-        private readonly ISectionRepository _sectionsRepository;
-        public SectionsHandler(ISectionRepository sectionsRepository)
+        private readonly IRestaurantRepository _sectionsRepository;
+        public SectionsHandler(IRestaurantRepository sectionsRepository)
         {
             _sectionsRepository = sectionsRepository;
         }

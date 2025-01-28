@@ -9,8 +9,8 @@ namespace RestaurantDemo.Handlers
     }
     public class DetailsHandler : IDetailsHandler
     {
-        private readonly IDetailsRepository _detailsRepository;
-        public DetailsHandler(IDetailsRepository detailsRepository)
+        private readonly IRestaurantRepository _detailsRepository;
+        public DetailsHandler(IRestaurantRepository detailsRepository)
         {
             _detailsRepository = detailsRepository;
         }

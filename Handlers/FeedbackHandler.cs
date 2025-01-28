@@ -9,15 +9,15 @@ namespace RestaurantDemo.Handlers
     }
     public class FeedbackHandler : IFeedbackHandler
     {
-        private readonly IFeedbackRepository _feedbackRepository;
-        public FeedbackHandler(IFeedbackRepository feedbackRepository)
+        private readonly IRestaurantRepository _feedbacks;
+        public FeedbackHandler(IRestaurantRepository feedbackRepository)
         {
-            _feedbackRepository = feedbackRepository;
+            _feedbacks = feedbackRepository;
         }
 
         public async Task<List<Feedback>> GetFeedbacks()
         {
-            return await _feedbackRepository.GetFeedbacks();
+            return await _feedbacks.GetFeedbacks();
         }
     }
 }

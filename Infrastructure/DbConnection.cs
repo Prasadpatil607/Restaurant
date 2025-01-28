@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 
-namespace RestaurantDemo.DatabaseConnection
+namespace RestaurantDemo.Infrastructure
 {
     public class DbConnection
     {

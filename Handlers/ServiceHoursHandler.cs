@@ -9,8 +9,8 @@ namespace RestaurantDemo.Handlers
     }
     public class ServiceHoursHandler : IServiceHoursHandler
     {
-        private readonly IServiceHourRepository _serviceHoursRepository;
-        public ServiceHoursHandler(IServiceHourRepository serviceHoursRepository)
+        private readonly IRestaurantRepository _serviceHoursRepository;
+        public ServiceHoursHandler(IRestaurantRepository serviceHoursRepository)
         {
             _serviceHoursRepository = serviceHoursRepository;
         }

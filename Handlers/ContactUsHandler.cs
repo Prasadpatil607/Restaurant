@@ -9,8 +9,8 @@ namespace RestaurantDemo.Handlers
     }
     public class ContactUsHandler : IContactUsHandler
     {
-        private readonly IContactUsRepository _contactUsRepository;
-        public ContactUsHandler(IContactUsRepository contactUsRepository)
+        private readonly IRestaurantRepository _contactUsRepository;
+        public ContactUsHandler(IRestaurantRepository contactUsRepository)
         {
             _contactUsRepository = contactUsRepository;
         }
